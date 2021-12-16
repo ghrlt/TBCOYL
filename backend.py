@@ -1,6 +1,8 @@
 from __main__ import app, request, session, redirect, abort
 from functools import wraps
 
+import backend_db as db
+
 import json
 
 
@@ -53,16 +55,23 @@ def handling_403(err):
 @app.route('/login', methods=['POST'])
 def loginSys():
 	form = request.form
+	email = form.get('email')
 
-	# Do check
+	u = db.User.query.filter_by(email=email).first()
+	if not u:
+		session['error'] = "Unknown email."
+		return redirect("/login")
 
-	# Login
-	session['email'] = form.get('email')
+	if u.password != form.get('password'): # Security lvl 100 - TODO hash
+		session['error'] = "Incorrect password entered."
+		return redirect("/login")
+
+	try: del session['error']
+	except: pass
+	session['email'] = email
 	session['loggedin'] = True
 	session.permanent = True
 
 	r = form.get('redirect')
 	return redirect(r or '/')
-
-
 
