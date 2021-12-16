@@ -2,12 +2,85 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>Dashboard | TBCOYL</title>
+	
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{url_for('static', filename='fonts/icomoon/style.css')}}">
+	<link rel="stylesheet" href="{{url_for('static', filename='css/owl.carousel.min.css')}}">
+	<link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+	<link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+	
 </head>
 <body>
 
+	Hello {{session['name']}}!
+	<br>
+
 	Dashboard - TODO
 
+<form action="/create_new_link" method="POST">
+	<input type="text" name="redirect_to" required placeholder="Link to shorten/hide">
+	Domain <select name="domain"><option>tbcoyl.com</option><option>tbcoyl.link</option><option>takebackcontroloveryourlinks.com</option></select>
+	Monetize? <input type="checkbox" name="ad">
+	Expiration? <input type="datetime-local" name="expiration">
+
+	<br>
+	<input type="submit" name="submit">
+</form>
+
+
+
+<!-- Display user links -->
+
+
+<div class="content">
+	<div class="container" style="max-width: unset;">
+		<h2 class="mb-5">Your links</h2>
+		<div class="table-responsive custom-table-responsive">
+			<table class="table custom-table">
+				<thead>
+					<tr>
+						<th scope="col" style="padding-right: 25px;">
+							<label class="control control--checkbox">
+									<input type="checkbox" class="js-check-all"/>
+								<div class="control__indicator"></div>
+							</label>
+						</th>
+						<th scope="col">Short link</th>
+						<th scope="col">Full link</th>
+						<th scope="col">Views</th>
+						<th scope="col">Expires on</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for link in links %}
+					<tr scope="row">
+						<th scope="row">
+							<label class="control control--checkbox">
+								<input type="checkbox"/>
+								<div class="control__indicator"></div>
+							</label>
+						</th>
+						<td><a href="https://{{link.fullurl}}" target="_blank">{{link.fullurl}}</a></td>
+						<td><a href="{{link.source_link}}" target="_blank">{{link.source_link[0:60]}}{{"..." if link.source_link|length > 60 else ""}}</a></td>
+						<td>{{link.views}}</td>
+						<td>{{link.expires or "Never"}}</td>
+					</tr>
+					<tr class="spacer"><td colspan="100"></td></tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+
+
+<script src="{{url_for('static', filename='vendor/jquery/jquery-3.2.1.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/popper.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static', filename='js/main.js')}}"></script>
 </body>
 </html>

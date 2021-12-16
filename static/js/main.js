@@ -7,7 +7,7 @@
     [ Validate ]*/
     var input = $('.validate-input .input100');
 
-    $('.validate-form').on('submit',function(){
+    $('.validate-form').on('submit', function(){
         var check = true;
 
         for(var i=0; i<input.length; i++) {
@@ -34,8 +34,18 @@
             }
         }
         else {
-            if($(input).val().trim() == ''){
-                return false;
+            if($(input).attr('type') == 'name' || $(input).attr('name') == 'name') {
+                if($(input).val().trim().match(/[a-zA-Z\u00C0-\u00FF ]*/) == null) {
+                    return false;
+                }
+                if($(input).val().trim() == ''){
+                    return false;
+                }
+            }
+            else {
+                if($(input).val().trim() == ''){
+                    return false;
+                }
             }
         }
     }
@@ -55,3 +65,33 @@
     
 
 })(jQuery);
+
+$(function() {
+
+  $('.js-check-all').on('click', function() {
+
+    if ( $(this).prop('checked') ) {
+        $('th input[type="checkbox"]').each(function() {
+            $(this).prop('checked', true);
+        $(this).closest('tr').addClass('active');
+        })
+    } else {
+        $('th input[type="checkbox"]').each(function() {
+            $(this).prop('checked', false);
+        $(this).closest('tr').removeClass('active');
+        })
+    }
+
+  });
+
+  $('th[scope="row"] input[type="checkbox"]').on('click', function() {
+    if ( $(this).closest('tr').hasClass('active') ) {
+      $(this).closest('tr').removeClass('active');
+    } else {
+      $(this).closest('tr').addClass('active');
+    }
+  });
+
+    
+
+});
