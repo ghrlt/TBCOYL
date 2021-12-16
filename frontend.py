@@ -1,4 +1,4 @@
-from __main__ import app, request, render_template
+from __main__ import app, request, session, render_template
 
 import backend
 
@@ -9,12 +9,26 @@ def home():
 @app.route('/login')
 @backend.isNotLoggedIn
 def login():
-	return render_template("login.html")
+	page = render_template("login.html")
+	try: del session['error']
+	except: pass
+	
+	return page
+
+@app.route('/register')
+@backend.isNotLoggedIn
+def register():
+	page = render_template("register.html")
+	try: del session['error']
+	except: pass
+	
+	return page
+
 
 @app.route('/dashboard')
 @backend.isLoggedIn
 def dashboard():
-	return render_template("dashboard.html")
+	return render_template("dashboard.html", links=backend.loadUserLinks())
 
 
 @app.route('/404')
