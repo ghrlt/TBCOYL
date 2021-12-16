@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Login to access dashboard | TBCOYL</title>
+</head>
+<body>
+
+<form action="/login" method="POST">
+	<input type="email" name="email" placeholder="johndoe@tbcoyl.com">
+	<input type="password" name="password" placeholder="************">
+
+	<input id="r" type="hidden" name="redirect" value="">
+	<script type="text/javascript">
+		var url = window.location.href;
+		var url = new URL(url);
+		document.getElementById("r").value = url.searchParams.get("r");
+	</script>
+
+	<input type="submit" name="submit">
+</form>
+
+</body>
+</html>
