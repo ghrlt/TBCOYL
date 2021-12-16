@@ -20,10 +20,14 @@ def isNotLoggedIn(f):
 	@wraps(f)
 	def wrap_isNotLoggedIn(*args, **kwargs):
 		req_ip = request.remote_addr
-		is_logged = True if session.get('loggedin') else False
 
+		if request.args.get('force') != None:
+			del session['loggedin']
+		
+		is_logged = True if session.get('loggedin') else False
 		if is_logged:
-			return redirect(f"{request.args.get('r')}")
+			r = request.args.get('r')
+			return redirect(r or '/')
 
 		return f(*args, **kwargs)
 	return wrap_isNotLoggedIn
@@ -39,8 +43,6 @@ def handling_links(err):
 		return redirect( links[request.path]['l'] )
 
 	return redirect(f"/404?f={request.path}") #Get that from this or from session for better design, idk
-
-
 
 @app.errorhandler(403)
 def handling_403(err):
@@ -59,4 +61,8 @@ def loginSys():
 	session['loggedin'] = True
 	session.permanent = True
 
-	return redirect(form.get('redirect') or '/')
+	r = form.get('redirect')
+	return redirect(r or '/')
+
+
+
