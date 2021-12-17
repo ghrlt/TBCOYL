@@ -1,5 +1,1 @@
-*.rb linguist-language=HTML
-*.rb linguist-language=CSS
-*.rb linguist-language=SCSS
-*.rb linguist-language=Less
- 
+*.* linguist-language=Python
