@@ -1,4 +1,4 @@
 static/vendor/** linguist-vendored
-static/scss/bootstrap/** linguist-vendored
-static/css/bootstrap/** linguist-vendored
+static/scss/** linguist-vendored
+static/css/** linguist-vendored
 static/fonts/** linguist-vendored
