@@ -28,7 +28,7 @@ def register():
 @app.route('/dashboard')
 @backend.isLoggedIn
 def dashboard():
-	return render_template("dashboard.html", links=backend.loadUserLinks())
+	return render_template("dashboard.html", links=reversed(backend.loadUserLinks()))
 
 
 @app.route('/404')

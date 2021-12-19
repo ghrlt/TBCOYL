@@ -122,6 +122,8 @@ def createLinkSys():
 	owner = session['id']
 	domain = form.get('domain')
 
+	cre_date = datetime.datetime.now()
+
 	if form.get('expiration'):
 		exp_date = datetime.datetime.strptime(form.get('expiration').replace('T', ' '), '%Y-%m-%d %H:%M')
 	else:
@@ -132,7 +134,7 @@ def createLinkSys():
 		code = genCode()
 
 	link = bdb.Link(owner, source, code, domain)
-	data = bdb.LinkData(code, source, 1 if form.get('ad') == "true" else 0, 0, exp_date)
+	data = bdb.LinkData(code, source, 1 if form.get('ad') == "true" else 0, 0, cre_date, exp_date)
 
 	bdb.db.session.add(link)
 	bdb.db.session.add(data)
@@ -152,12 +154,11 @@ def loadUserLinks():
 
 		links[i].views = link_data.views
 		links[i].ad = link_data.ad
+		links[i].created = link_data.created
 		links[i].expires = link_data.expire
 		links[i].fullurl = f"{link.domain}/{link.code}"
 
 	return links
-
-
 
 
 

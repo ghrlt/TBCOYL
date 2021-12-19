@@ -53,13 +53,15 @@ class LinkData(db.Model):
 
 	ad = db.Column(db.Integer, nullable=False)
 	views = db.Column(db.Integer, nullable=False)
+	created = db.Column(db.DateTime, nullable=False)
 	expire = db.Column(db.DateTime)
 
-	def __init__(self, id, link, ad, views, expire):
+	def __init__(self, id, link, ad, views, created, expire):
 		self.id = id
 		self.link = link
 		self.ad = ad
 		self.views = views
+		self.created = created
 		self.expire = expire
 
 
