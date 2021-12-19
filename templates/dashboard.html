@@ -20,24 +20,64 @@
 
 	Dashboard - TODO
 
-<form action="/create_new_link" method="POST">
-	<input type="text" name="redirect_to" required placeholder="Link to shorten/hide">
-	Domain <select name="domain"><option>tbcoyl.com</option><option>tbcoyl.link</option><option>takebackcontroloveryourlinks.com</option></select>
-	Monetize? <input type="checkbox" name="ad">
-	Expiration? <input type="datetime-local" name="expiration">
+	
 
-	<br>
-	<input type="submit" name="submit">
-</form>
-
-
-
-<!-- Display user links -->
-
-
+<!-- Create new link -->
 <div class="content">
 	<div class="container" style="max-width: unset;">
-		<h2 class="mb-5">Your links</h2>
+		<h2 class="mb-3">Add new link</h2>
+		<form action="/create_new_link" method="POST">
+			<div class="table-responsive custom-table-responsive">
+				<table class="table custom-table">
+					<thead>
+						<tr>
+							<th scope="col">
+								<span>Link to shorten</span>
+							</th>
+							<th scope="col">
+								<span>Domain to use</span>
+							</th>
+							<th scope="col">
+								<span>Monetize the link?</span>
+								
+							</th>
+							<th scope="col">
+								<span>Expiration date</span>
+								
+							</th>
+							<th scope="col"><input type="submit" name="submit"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr scope="row">
+							<th scope="row">
+								<input type="text" name="redirect_to" required placeholder="Link to shorten/hide">
+							</th>
+							<th scope="row">
+								<select name="domain">
+									<option>tbcoyl.com</option>
+									<option>tbcoyl.link</option>
+									<option>takebackcontroloveryourlinks.com</option>
+								</select>
+							</th>
+							<th scope="row">
+								<input type="checkbox" name="ad">
+							</th>
+							<th scope="row">
+								<input type="datetime-local" name="expiration">
+							</th>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Display user links -->
+<div class="content">
+	<div class="container" style="max-width: unset;">
+		<h2 class="mb-3">Your links</h2>
 		<div class="table-responsive custom-table-responsive">
 			<table class="table custom-table">
 				<thead>

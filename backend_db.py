@@ -39,7 +39,6 @@ class Link(db.Model):
 
 	def __init__(self, owner, source_link, code, domain):
 		self.owner = owner
-		#self.owner_ = owner_
 		self.source_link = source_link
 		self.code = code
 		self.domain = domain
@@ -65,5 +64,26 @@ class LinkData(db.Model):
 		self.expire = expire
 
 
+class Visitor(db.Model):
+	__tablename__ = "visitors"
+	id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+	visited = db.Column(db.String, db.ForeignKey('links.code'), nullable=False)
+	visited_ = db.relationship("Link", backref="visitors.visited")
+	ip = db.Column(db.String, nullable=False)
+	referred_from = db.Column(db.String)
+	continent = db.Column(db.String)
+	country = db.Column(db.String)
+	city = db.Column(db.String)
+	using_cellular = db.Column(db.Boolean, nullable=False)
+	under_proxy = db.Column(db.Boolean, nullable=False)
 
+	def __init__(self, visited, ip, referred_from, continent, country, city, using_cellular, under_proxy):
+		self.visited = visited
+		self.ip = ip
+		self.referred_from = referred_from
+		self.continent = continent
+		self.country = country
+		self.city = city
+		self.using_cellular = using_cellular
+		self.under_proxy = under_proxy
 

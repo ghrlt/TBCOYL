@@ -6,6 +6,7 @@ import backend_db as bdb
 import json
 import random
 import datetime
+import requests
 
 
 def isLoggedIn(f):
@@ -45,14 +46,22 @@ def handling_links(err):
 		link_data = bdb.LinkData.query.filter_by(id=link.code).first()
 		link_data.views += 1
 
+		# Stats
+		ip = request.remote_addr
+		ii = requests.get(f"http://ip-api.com/json/{ip}?fields=status,continent,country,city,timezone,isp,mobile,proxy,query").json()
+		if ii['status'] == "success":
+			visitor = bdb.Visitor(link.code, ip, request.referrer, ii['continent'], ii['country'], ii['city'], ii['mobile'], ii['proxy'])
+			bdb.db.session.add(visitor)
+		
 		bdb.db.session.commit()
+
 
 		if link_data.ad == 1:
 			return render_template("ad.html", r_to=link.source_link)
 
 		return redirect( link.source_link )
 
-	return redirect(f"/404?f={request.path}") #Get that from session for better design idk
+	return redirect(f"/404?f={request.path}")
 
 @app.errorhandler(403)
 def handling_403(err):
