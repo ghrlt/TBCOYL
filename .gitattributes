@@ -3,3 +3,4 @@ static/scss/** linguist-vendored
 static/css/** linguist-vendored
 static/fonts/** linguist-vendored
 static/vendors/** linguist-vendored
+static/js/** linguist-vendored
