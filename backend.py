@@ -41,7 +41,7 @@ def isNotLoggedIn(f):
 
 @app.errorhandler(404)
 def handling_links(err):
-	link = bdb.Link.query.filter_by(code=request.path.strip('/')).first()
+	link = bdb.Link.query.filter_by(code=request.path.strip('/'), status=0).first()
 	if link:
 		link_data = bdb.LinkData.query.filter_by(id=link.code).first()
 		link_data.views += 1
@@ -147,7 +147,7 @@ def createLinkSys():
 	while bdb.Link.query.filter_by(code=code).first():
 		code = genCode()
 
-	link = bdb.Link(owner, source, code, domain)
+	link = bdb.Link(0, owner, source, code, domain)
 	data = bdb.LinkData(code, source, 1 if form.get('ad') == "true" else 0, 0, cre_date, exp_date)
 
 	bdb.db.session.add(link)
@@ -157,6 +157,32 @@ def createLinkSys():
 	return redirect('/dashboard')
 
 
+
+@app.route('/dashboard/links/<code>/disable', methods=['POST'])
+def disableLinkByCode(code):
+	link = bdb.Link.query.filter_by(code=code).first()
+	link.status = 1
+	bdb.db.session.commit()
+
+	return redirect(f"/dashboard/links/{code}")
+
+@app.route('/dashboard/links/<code>/enable', methods=['POST'])
+def enableLinkByCode(code):
+	link = bdb.Link.query.filter_by(code=code).first()
+	link.status = 0
+	bdb.db.session.commit()
+
+	return redirect(f"/dashboard/links/{code}")
+
+@app.route('/dashboard/links/<code>/delete', methods=['POST'])
+def deleteLinkByCode(code):
+	link = bdb.Link.query.filter_by(code=code).first()
+	link.status = -1
+	bdb.db.session.commit()
+
+	return redirect("/dashboard")
+
+
 #@app.route('/api/load_user_links')
 def loadUserLinks():
 	user = session['id']
@@ -164,6 +190,10 @@ def loadUserLinks():
 
 	links = bdb.Link.query.filter_by(owner=user.id).all()
 	for i, link in enumerate(links):
+		if link.status == -1:
+			links.pop(i)
+			continue
+
 		link_data = bdb.LinkData.query.filter_by(id=link.code).first()
 
 		links[i].views = link_data.views
@@ -392,6 +422,7 @@ def loadLinkByCode(code):
 			c.code = country_to_cc[c.name]
 			link.visitors_country_list[visitor.country] = c
 
+		c = link.visitors_country_list[visitor.country]
 		c.n_visitors += 1
 
 	temp = {}
@@ -408,14 +439,48 @@ def loadLinkByCode(code):
 	for key in temp2:
 		link.visitors_country_list[key] = temp1[key]
 
-
 	del temp
 	del temp1
 	del temp2
+
+
+	# Referrer stats
+	link.visitors_referrer_list = {}
+	for visitor in link.visitors:
+		if not visitor.referred_from in link.visitors_referrer_list:
+			r = Referrer()
+			r.n_visitors = 0
+			r.name = visitor.referred_from
+			link.visitors_referrer_list[r.name] = r
+
+		r = link.visitors_referrer_list[visitor.referred_from]
+		r.n_visitors += 1
+
+	temp = {}
+	for country in link.visitors_referrer_list.values():
+		temp[country.name] = country.n_visitors
+
+	total_visitors = sum([n_v for n_v in temp.values()])
+	for c,n_v in temp.items():
+		link.visitors_referrer_list[c].prct_visitors = (100*n_v)/total_visitors
+
+	temp1 = link.visitors_referrer_list
+	temp2 = sorted(link.visitors_referrer_list, key=lambda k: link.visitors_referrer_list[k].prct_visitors, reverse=True)
+	link.visitors_referrer_list = {}
+	for key in temp2:
+		link.visitors_referrer_list[key] = temp1[key]
+
+	del temp
+	del temp1
+	del temp2	
 	return link
 
 
 class Country:
+	def __init__(self):
+		pass
+
+class Referrer:
 	def __init__(self):
 		pass
 

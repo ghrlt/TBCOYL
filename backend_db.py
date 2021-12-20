@@ -30,6 +30,7 @@ class User(db.Model):
 class Link(db.Model):
 	__tablename__ = "links"
 	id = db.Column(db.Integer, primary_key=True, unique=True)
+	status = db.Column(db.Integer, nullable=False)
 	owner = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 	owner_ = db.relationship("User", backref="links.owner")
 
@@ -37,7 +38,8 @@ class Link(db.Model):
 	code = db.Column(db.String, unique=True, nullable=False)
 	domain = db.Column(db.String, nullable=False)
 
-	def __init__(self, owner, source_link, code, domain):
+	def __init__(self, status, owner, source_link, code, domain):
+		self.status = status
 		self.owner = owner
 		self.source_link = source_link
 		self.code = code

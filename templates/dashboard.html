@@ -84,8 +84,7 @@
 					<tr>
 						<th scope="col" style="padding-right: 25px;">
 							<label class="control control--checkbox">
-									<input type="checkbox" class="js-check-all"/>
-								<div class="control__indicator"></div>
+								<div class="control__indicator bg-info"></div>
 							</label>
 						</th>
 						<th scope="col">Short link</th>
@@ -100,8 +99,13 @@
 					<tr scope="row" onclick="window.location='/dashboard/links/{{link.code}}'">
 						<th scope="row">
 							<label class="control control--checkbox">
-								<input type="checkbox"/>
-								<div class="control__indicator"></div>
+								{% if link.status == 0 %}
+								<div class="control__indicator bg-success"></div>
+								{% elif link.status == 1 %}
+								<div class="control__indicator bg-warning"></div>
+								{% elif link.status == -1 %}
+								<div class="control__indicator bg-danger"></div>
+								{% endif %}
 							</label>
 						</th>
 						<td><a href="https://{{link.fullurl}}" target="_blank">{{link.fullurl}}</a></td>
