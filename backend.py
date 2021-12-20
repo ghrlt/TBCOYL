@@ -402,7 +402,16 @@ def loadLinkByCode(code):
 	for c,n_v in temp.items():
 		link.visitors_country_list[c].prct_visitors = (100*n_v)/total_visitors
 
+	temp1 = link.visitors_country_list
+	temp2 = sorted(link.visitors_country_list, key=lambda k: link.visitors_country_list[k].prct_visitors, reverse=True)
+	link.visitors_country_list = {}
+	for key in temp2:
+		link.visitors_country_list[key] = temp1[key]
+
+
 	del temp
+	del temp1
+	del temp2
 	return link
 
 
