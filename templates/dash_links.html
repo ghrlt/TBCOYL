@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="{{url_for('static', filename='images/tbcoyl_favicon.png')}}"/>
+	<title>Link statistics | TBCOYL</title>
+
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/flag-icon-css/css/flag-icon.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/mdi/css/materialdesignicons.min.css')}}">
+</head>
+<body>
+<div style="padding: 1.5rem">
+	<div class="row">
+		<div class="col-xl-3 col-sm-5 grid-margin stretch-card">
+			<div class="card">
+				<div class="card-body">
+				<div class="row">
+					<div class="col-8">
+						<div class="d-flex align-items-center align-self-start">
+							<h3 class="mb-0">{{link.views}}</h3>
+						</div>
+					</div>
+					<div class="col-1">
+						<div class="icon icon-box-success">
+							<span class="mdi mdi-arrow-up icon-item"></span>
+						</div>
+					</div>
+				</div>
+				<h6 class="text-muted font-weight-normal">Total visitors</h6>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-xl-3 col-sm-5 grid-margin stretch-card">
+			<div class="card">
+				<div class="card-body">
+				<div class="row">
+					<div class="col-8">
+						<div class="d-flex align-items-center align-self-start">
+							<h3 class="mb-0">{{n_visitors['month']}}</h3>
+							{% if n_visitors['month'] > n_visitors['last_month'] %}
+							<p class="text-success ml-2 mb-0 font-weight-medium">+{{(100*(n_visitors['month']-n_visitors['last_month'])/n_visitors['month'])|round(2, 'floor')}}%</p>
+							{% else %}
+							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100*(n_visitors['last_month']-n_visitors['month'])/n_visitors['last_month'])|round(2, 'floor')}}%</p>
+							{% endif %}
+						</div>
+					</div>
+					<div class="col-1">
+						{% if n_visitors['month'] > n_visitors['last_month'] %}
+						<div class="icon icon-box-success">
+							<span class="mdi mdi-arrow-top-right icon-item"></span>
+						</div>
+						{% else %}
+						<div class="icon icon-box-danger">
+							<span class="mdi mdi-arrow-bottom-left icon-item"></span>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<h6 class="text-muted font-weight-normal">This month</h6>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-xl-3 col-sm-5 grid-margin stretch-card">
+			<div class="card">
+				<div class="card-body">
+				<div class="row">
+					<div class="col-8">
+						<div class="d-flex align-items-center align-self-start">
+							<h3 class="mb-0">{{n_visitors['day']}}</h3>
+							{% if n_visitors['day'] > n_visitors['last_day'] %}
+							<p class="text-success ml-2 mb-0 font-weight-medium">+{{(100*(n_visitors['day']-n_visitors['last_day'])/n_visitors['day'])|round(2, 'floor')}}%</p>
+							{% else %}
+							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100*(n_visitors['last_day']-n_visitors['day'])/n_visitors['last_day'])|round(2, 'floor')}}%</p>
+							{% endif %}
+						</div>
+					</div>
+					<div class="col-1">
+						{% if n_visitors['day'] > n_visitors['last_day'] %}
+						<div class="icon icon-box-success">
+							<span class="mdi mdi-arrow-top-right icon-item"></span>
+						</div>
+						{% else %}
+						<div class="icon icon-box-danger">
+							<span class="mdi mdi-arrow-bottom-left icon-item"></span>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				<h6 class="text-muted font-weight-normal">Today</h6>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title">Visitors by Countries</h4>
+					<div class="row">
+						<div class="col-md-5">
+							<div class="table-responsive">
+								<table class="table">
+									<tbody>
+										{% for country in link.visitors_country_list.values() %}
+										<tr>
+											<td><i class="flag-icon flag-icon-{{country.code.lower()}}"></i></td>
+											<td>{{country.name}}</td>
+											<td class="text-right">{{country.n_visitors}}</td>
+											<td class="text-right font-weight-medium">{{country.prct_visitors}}</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div id="audience-map" class="vector-map"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+	<script src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+	<script src="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap.min.js')}}"></script>
+	<script src="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
+	<script type="text/javascript">
+		if($('#audience-map').length) {
+			$('#audience-map').vectorMap({
+				map: 'world_mill_en', backgroundColor: 'transparent',
+				panOnDrag: true, focusOn: {x: 0.5, y: 0.5, scale: 1, animate: true},
+				series: {
+					regions: [{
+					scale: ['#f2f2f2', '#3d3c3c'],
+					normalizeFunction: 'polynomial',
+					values: {
+						{% for country in link.visitors_country_list.values() %}
+						"{{country.code}}": {{country.prct_visitors}},
+						{% endfor %}
+					}
+					}]
+				}
+			});
+		}
+	</script>	
+	<!--<script src="{{url_for('static', filename='js/dashboard.js')}}"></script>-->
+
+</body>
+</html>

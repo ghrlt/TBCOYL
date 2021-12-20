@@ -47,10 +47,15 @@ def handling_links(err):
 		link_data.views += 1
 
 		# Stats
-		ip = request.remote_addr
+		ip = "86.210.67.40"#request.remote_addr
 		ii = requests.get(f"http://ip-api.com/json/{ip}?fields=status,continent,country,city,timezone,isp,mobile,proxy,query").json()
 		if ii['status'] == "success":
-			visitor = bdb.Visitor(link.code, ip, request.referrer, ii['continent'], ii['country'], ii['city'], ii['mobile'], ii['proxy'])
+			visitor = bdb.Visitor(
+					link.code, datetime.datetime.utcnow(),
+					ip, request.referrer,
+					ii['continent'], ii['country'],
+					ii['city'], ii['mobile'], ii['proxy']
+			)
 			bdb.db.session.add(visitor)
 		
 		bdb.db.session.commit()
@@ -170,6 +175,240 @@ def loadUserLinks():
 	return links
 
 
+#app.route('/api/load_link')
+def loadLinkByCode(code):
+	link = bdb.Link.query.filter_by(code=code).first()
+	l_data = bdb.LinkData.query.filter_by(id=link.code).first()
+
+	link.views = l_data.views
+	link.ad = l_data.ad
+	link.created = l_data.created
+	link.expires = l_data.expire
+	link.fullurl = f"{link.domain}/{link.code}"
+
+	link.visitors = bdb.Visitor.query.filter_by(visited=link.code).all()
+
+	# By period stats
+	link.n_visitors = {"day": 0, "last_day": 0, "month": 0, "last_month": 0}
+	for visitor in link.visitors:
+		if visitor.visite_date > datetime.datetime.now()-datetime.timedelta(days=61):
+			if visitor.visite_date > datetime.datetime.now()-datetime.timedelta(days=30):
+				link.n_visitors['month'] += 1
+			else:
+				link.n_visitors['last_month'] += 1
+
+			if visitor.visite_date > datetime.datetime.now()-datetime.timedelta(days=2):
+				if visitor.visite_date > datetime.datetime.now()-datetime.timedelta(days=1):
+					link.n_visitors['day'] += 1
+				else:
+					link.n_visitors['last_day'] += 1
+
+
+	# Country stats
+	link.visitors_country_list = {}
+	country_to_cc = {
+		"Bangladesh": "BD",
+		"Belgium": "BE",
+		"Burkina Faso": "BF",
+		"Bulgaria": "BG",
+		"Bosnia and Herz.": "BA",
+		"Brunei": "BN",
+		"Bolivia": "BO",
+		"Japan": "JP",
+		"Burundi": "BI",
+		"Benin": "BJ",
+		"Bhutan": "BT",
+		"Jamaica": "JM",
+		"Botswana": "BW",
+		"Brazil": "BR",
+		"Bahamas": "BS",
+		"Belarus": "BY",
+		"Belize": "BZ",
+		"Russia": "RU",
+		"Rwanda": "RW",
+		"Serbia": "RS",
+		"Lithuania": "LT",
+		"Luxembourg": "LU",
+		"Liberia": "LR",
+		"Romania": "RO",
+		"Guinea-Bissau": "GW",
+		"Guatemala": "GT",
+		"Greece": "GR",
+		"Eq. Guinea": "GQ",
+		"Guyana": "GY",
+		"Georgia": "GE",
+		"United Kingdom": "GB",
+		"Gabon": "GA",
+		"Guinea": "GN",
+		"Gambia": "GM",
+		"Greenland": "GL",
+		"Kuwait": "KW",
+		"Ghana": "GH",
+		"Oman": "OM",
+		"Somaliland": "_2",
+		"Kosovo": "_1",
+		"N. Cyprus": "_0",
+		"Jordan": "JO",
+		"Croatia": "HR",
+		"Haiti": "HT",
+		"Hungary": "HU",
+		"Honduras": "HN",
+		"Puerto Rico": "PR",
+		"Palestine": "PS",
+		"Portugal": "PT",
+		"Paraguay": "PY",
+		"Panama": "PA",
+		"Papua New Guinea": "PG",
+		"Peru": "PE",
+		"Pakistan": "PK",
+		"Philippines": "PH",
+		"Poland": "PL",
+		"Zambia": "ZM",
+		"W. Sahara": "EH",
+		"Estonia": "EE",
+		"Egypt": "EG",
+		"South Africa": "ZA",
+		"Ecuador": "EC",
+		"Albania": "AL",
+		"Angola": "AO",
+		"Kazakhstan": "KZ",
+		"Ethiopia": "ET",
+		"Zimbabwe": "ZW",
+		"Spain": "ES",
+		"Eritrea": "ER",
+		"Montenegro": "ME",
+		"Moldova": "MD",
+		"Madagascar": "MG",
+		"Morocco": "MA",
+		"Uzbekistan": "UZ",
+		"Myanmar": "MM",
+		"Mali": "ML",
+		"Mongolia": "MN",
+		"Macedonia": "MK",
+		"Malawi": "MW",
+		"Mauritania": "MR",
+		"Uganda": "UG",
+		"Malaysia": "MY",
+		"Mexico": "MX",
+		"Vanuatu": "VU",
+		"France": "FR",
+		"Finland": "FI",
+		"Fiji": "FJ",
+		"Falkland Is.": "FK",
+		"Nicaragua": "NI",
+		"Netherlands": "NL",
+		"Norway": "NO",
+		"Namibia": "NA",
+		"New Caledonia": "NC",
+		"Niger": "NE",
+		"Nigeria": "NG",
+		"New Zealand": "NZ",
+		"Nepal": "NP",
+		"Côte d'Ivoire": "CI",
+		"Switzerland": "CH",
+		"Colombia": "CO",
+		"China": "CN",
+		"Cameroon": "CM",
+		"Chile": "CL",
+		"Canada": "CA",
+		"Congo": "CG",
+		"Central African Rep.": "CF",
+		"Dem. Rep. Congo": "CD",
+		"Czech Rep.": "CZ",
+		"Cyprus": "CY",
+		"Costa Rica": "CR",
+		"Cuba": "CU",
+		"Swaziland": "SZ",
+		"Syria": "SY",
+		"Kyrgyzstan": "KG",
+		"Kenya": "KE",
+		"S. Sudan": "SS",
+		"Suriname": "SR",
+		"Cambodia": "KH",
+		"El Salvador": "SV",
+		"Slovakia": "SK",
+		"Korea": "KR",
+		"Slovenia": "SI",
+		"Dem. Rep. Korea": "KP",
+		"Somalia": "SO",
+		"Senegal": "SN",
+		"Sierra Leone": "SL",
+		"Solomon Is.": "SB",
+		"Saudi Arabia": "SA",
+		"Sweden": "SE",
+		"Sudan": "SD",
+		"Dominican Rep.": "DO",
+		"Djibouti": "DJ",
+		"Denmark": "DK",
+		"Germany": "DE",
+		"Yemen": "YE",
+		"Austria": "AT",
+		"Algeria": "DZ",
+		"United States": "US",
+		"Latvia": "LV",
+		"Uruguay": "UY",
+		"Lebanon": "LB",
+		"Lao PDR": "LA",
+		"Taiwan": "TW",
+		"Trinidad and Tobago": "TT",
+		"Turkey": "TR",
+		"Sri Lanka": "LK",
+		"Tunisia": "TN",
+		"Timor-Leste": "TL",
+		"Turkmenistan": "TM",
+		"Tajikistan": "TJ",
+		"Lesotho": "LS",
+		"Thailand": "TH",
+		"Fr. S. Antarctic Lands": "TF",
+		"Togo": "TG",
+		"Chad": "TD",
+		"Libya": "LY",
+		"United Arab Emirates": "AE",
+		"Venezuela": "VE",
+		"Afghanistan": "AF",
+		"Iraq": "IQ",
+		"Iceland": "IS",
+		"Iran": "IR",
+		"Armenia": "AM",
+		"Italy": "IT",
+		"Vietnam": "VN",
+		"Argentina": "AR",
+		"Australia": "AU",
+		"Israel": "IL",
+		"India": "IN",
+		"Tanzania": "TZ",
+		"Azerbaijan": "AZ",
+		"Ireland": "IE",
+		"Indonesia": "ID",
+		"Ukraine": "UA",
+		"Qatar": "QA",
+		"Mozambique": "MZ"
+	}
+	for visitor in link.visitors:
+		if not visitor.country in link.visitors_country_list:
+			c = Country()
+			c.n_visitors = 0
+			c.name = visitor.country
+			c.code = country_to_cc[c.name]
+			link.visitors_country_list[visitor.country] = c
+
+		c.n_visitors += 1
+
+	temp = {}
+	for country in link.visitors_country_list.values():
+		temp[country.name] = country.n_visitors
+
+	total_visitors = sum([n_v for n_v in temp.values()])
+	for c,n_v in temp.items():
+		link.visitors_country_list[c].prct_visitors = (100*n_v)/total_visitors
+
+	del temp
+	return link
+
+
+class Country:
+	def __init__(self):
+		pass
 
 
 def genCode():

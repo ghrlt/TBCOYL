@@ -97,7 +97,7 @@
 				</thead>
 				<tbody>
 					{% for link in links %}
-					<tr scope="row">
+					<tr scope="row" onclick="window.location='/dashboard/links/{{link.code}}'">
 						<th scope="row">
 							<label class="control control--checkbox">
 								<input type="checkbox"/>

@@ -69,6 +69,7 @@ class Visitor(db.Model):
 	id = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
 	visited = db.Column(db.String, db.ForeignKey('links.code'), nullable=False)
 	visited_ = db.relationship("Link", backref="visitors.visited")
+	visite_date = db.Column(db.DateTime, nullable=False)
 	ip = db.Column(db.String, nullable=False)
 	referred_from = db.Column(db.String)
 	continent = db.Column(db.String)
@@ -77,9 +78,10 @@ class Visitor(db.Model):
 	using_cellular = db.Column(db.Boolean, nullable=False)
 	under_proxy = db.Column(db.Boolean, nullable=False)
 
-	def __init__(self, visited, ip, referred_from, continent, country, city, using_cellular, under_proxy):
+	def __init__(self, visited, visite_date, ip, referred_from, continent, country, city, using_cellular, under_proxy):
 		self.visited = visited
 		self.ip = ip
+		self.visite_date = visite_date
 		self.referred_from = referred_from
 		self.continent = continent
 		self.country = country

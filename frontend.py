@@ -30,6 +30,11 @@ def register():
 def dashboard():
 	return render_template("dashboard.html", links=reversed(backend.loadUserLinks()))
 
+@app.route('/dashboard/links/<code>')
+#@backend.isLoggedIn
+def dashboard_links(code):
+	l = backend.loadLinkByCode(code)
+	return render_template("dash_links.html", link=l, n_visitors=l.n_visitors)
 
 @app.route('/404')
 def notfound_404():
