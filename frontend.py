@@ -26,15 +26,45 @@ def register():
 
 
 @app.route('/dashboard')
+@app.route('/dashboard/')
 @backend.isLoggedIn
 def dashboard():
 	return render_template("dashboard.html", links=reversed(backend.loadUserLinks()))
 
 @app.route('/dashboard/links/<code>')
-#@backend.isLoggedIn
+@backend.isLoggedIn
 def dashboard_links(code):
 	l = backend.loadLinkByCode(code)
-	return render_template("dash_links.html", link=l, n_visitors=l.n_visitors)
+	return render_template("dash_links.html", link=l)
+
+
+@app.route('/admin')
+@app.route('/admin/')
+@backend.isLoggedInAsAdmin
+def admin():
+	return render_template("admin/index.html")
+
+@app.route('/admin/links')
+@app.route('/admin/links/')
+@backend.isLoggedInAsAdmin
+def admin_links():
+	l = []
+	return render_template("admin/links.html", links=l)
+
+@app.route('/admin/users')
+@app.route('/admin/users/')
+@backend.isLoggedInAsAdmin
+def admin_users():
+	u = []
+	return render_template("admin/users.html", users=u)
+
+@app.route('/admin/links/<code>')
+@backend.isLoggedInAsAdmin
+def admin_link(code):
+	l = backend.loadLinkByCode(code)
+	return render_template("admin/link.html", link=l)
+
+
 
 @app.route('/404')
 def notfound_404():
