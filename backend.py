@@ -37,11 +37,28 @@ def isNotLoggedIn(f):
 		return f(*args, **kwargs)
 	return wrap_isNotLoggedIn
 
+def isLoggedInAsAdmin(f):
+	@wraps(f)
+	def wrap_isLoggedInAsAdmin(*args, **kwargs):
+		req_ip = request.remote_addr
+		is_logged = True if session.get('loggedin') else False
+
+		if not is_logged:
+			return redirect(f"/login?r={request.path}")
+
+		if bdb.User.query.filter_by(email=session['email']).first().is_admin:
+			return f(*args, **kwargs)
+		return abort(403)
+
+	return wrap_isLoggedInAsAdmin
+
 
 
 @app.errorhandler(404)
 def handling_links(err):
-	link = bdb.Link.query.filter_by(code=request.path.strip('/'), status=0).first()
+	path = request.path.strip('/')
+
+	link = bdb.Link.query.filter_by(code=path, status=0).first()
 	if link:
 		link_data = bdb.LinkData.query.filter_by(id=link.code).first()
 		link_data.views += 1
@@ -51,10 +68,10 @@ def handling_links(err):
 		ii = requests.get(f"http://ip-api.com/json/{ip}?fields=status,continent,country,city,timezone,isp,mobile,proxy,query").json()
 		if ii['status'] == "success":
 			visitor = bdb.Visitor(
-					link.code, datetime.datetime.utcnow(),
-					ip, request.referrer,
-					ii['continent'], ii['country'],
-					ii['city'], ii['mobile'], ii['proxy']
+				link.code, datetime.datetime.utcnow(),
+				ip, request.referrer,
+				ii['continent'], ii['country'],
+				ii['city'], ii['mobile'], ii['proxy']
 			)
 			bdb.db.session.add(visitor)
 		
@@ -63,8 +80,10 @@ def handling_links(err):
 
 		if link_data.ad == 1:
 			return render_template("ad.html", r_to=link.source_link)
-
 		return redirect( link.source_link )
+
+	elif bdb.Link.query.filter_by(code=path, status=1).first():
+		return redirect(f"/disabled?f={path}")
 
 	return redirect(f"/404?f={request.path}")
 
@@ -104,7 +123,7 @@ def registerSys():
 	form = request.form
 	name = form.get('name')
 	email = form.get('email')
-	password = form.get('password')
+	password = form.get('password') # Security lvl 100 - TODO hash
 
 	u = bdb.User.query.filter_by(email=email).first()
 	if u:
@@ -181,6 +200,17 @@ def deleteLinkByCode(code):
 	bdb.db.session.commit()
 
 	return redirect("/dashboard")
+
+@app.route('/admin/links/<code>/ban', methods=['POST'])
+@isLoggedInAsAdmin
+def banLinkByCode(code):
+	link = bdb.Link.query.filter_by(code=code).first()
+	link.status = -1
+	bdb.db.session.commit()
+
+	return redirect("/dashboard")
+
+
 
 
 #@app.route('/api/load_user_links')
