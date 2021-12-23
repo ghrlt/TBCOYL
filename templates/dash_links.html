@@ -47,16 +47,16 @@
 				<div class="row">
 					<div class="col-8">
 						<div class="d-flex align-items-center align-self-start">
-							<h3 class="mb-0">{{n_visitors['month']}}</h3>
-							{% if n_visitors['month'] > n_visitors['last_month'] %}
-							<p class="text-success ml-2 mb-0 font-weight-medium">+{{(100*(n_visitors['month']-n_visitors['last_month'])/n_visitors['month'])|round(2, 'floor')}}%</p>
+							<h3 class="mb-0">{{link.n_visitors['month']}}</h3>
+							{% if link.n_visitors['month'] > link.n_visitors['last_month'] %}
+							<p class="text-success ml-2 mb-0 font-weight-medium">+{{0 if link.n_visitors['month'] == 0 else (100*(link.n_visitors['last_month']-link.n_visitors['month'])/link.n_visitors['last_month'])|abs()|round(2, 'floor')}}%</p>
 							{% else %}
-							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100*(n_visitors['last_month']-n_visitors['month'])/n_visitors['last_month'])|round(2, 'floor')}}%</p>
+							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{100 if link.n_visitors['last_month'] == 0 else (100*(link.n_visitors['month']-link.n_visitors['last_month'])/link.n_visitors['month'])|abs()|round(2, 'floor')}}%</p>
 							{% endif %}
 						</div>
 					</div>
 					<div class="col-1">
-						{% if n_visitors['month'] > n_visitors['last_month'] %}
+						{% if link.n_visitors['month'] > link.n_visitors['last_month'] %}
 						<div class="icon icon-box-success">
 							<span class="mdi mdi-arrow-top-right icon-item"></span>
 						</div>
@@ -78,16 +78,16 @@
 				<div class="row">
 					<div class="col-8">
 						<div class="d-flex align-items-center align-self-start">
-							<h3 class="mb-0">{{n_visitors['day']}}</h3>
-							{% if n_visitors['day'] > n_visitors['last_day'] %}
-							<p class="text-success ml-2 mb-0 font-weight-medium">+{{(100*(n_visitors['day']-n_visitors['last_day'])/n_visitors['day'])|round(2, 'floor')}}%</p>
+							<h3 class="mb-0">{{link.n_visitors['day']}}</h3>
+							{% if link.n_visitors['day'] > link.n_visitors['last_day'] %}
+							<p class="text-success ml-2 mb-0 font-weight-medium">+{{100 if link.n_visitors['day'] == 0 else (100*(link.n_visitors['last_day']-link.n_visitors['day'])/link.n_visitors['last_day'])|abs()|round(2, 'floor')}}%</p>
 							{% else %}
-							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100*(n_visitors['last_day']-n_visitors['day'])/n_visitors['last_day'])|round(2, 'floor')}}%</p>
+							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100 if link.n_visitors['last_day'] == 0 else 100*(link.n_visitors['day']-link.n_visitors['last_day'])/link.n_visitors['day'])|abs()|round(2, 'floor')}}%</p>
 							{% endif %}
 						</div>
 					</div>
 					<div class="col-1">
-						{% if n_visitors['day'] > n_visitors['last_day'] %}
+						{% if link.n_visitors['day'] > link.n_visitors['last_day'] %}
 						<div class="icon icon-box-success">
 							<span class="mdi mdi-arrow-top-right icon-item"></span>
 						</div>
@@ -232,7 +232,7 @@
 				<div class="card-body">
 					<h4 class="card-title">Visitors by referrer</h4>
 					<div class="row" style="max-height: 300px;">
-						<div class="col-md-11" style="max-height: inherit;">
+						<div class="col-md-5" style="max-height: inherit;">
 							<div class="table-responsive" style="max-height: inherit;">
 								<table class="table">
 									<tbody>
@@ -252,6 +252,7 @@
 				</div>
 			</div>
 		</div>
+		
 	</div>
 </div>
 
