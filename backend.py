@@ -131,8 +131,7 @@ def registerSys():
 		return redirect("/register")
 
 	t = datetime.datetime.utcnow()
-
-	u = bdb.User(name, email, password, t)
+	u = bdb.User(name, email, password, False, t)
 	bdb.db.session.add(u)
 	bdb.db.session.commit()
 
