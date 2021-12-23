@@ -18,12 +18,14 @@ class User(db.Model):
 	name = db.Column(db.String, nullable=False)
 	email = db.Column(db.String, nullable=False)
 	password = db.Column(db.String, nullable=False)
+	is_admin = db.Column(db.Boolean, nullable=False)
 	created = db.Column(db.DateTime)
 
-	def __init__(self, name, email, password, created):
+	def __init__(self, name, email, password, is_admin, created):
 		self.name = name
 		self.email = email
 		self.password = password
+		self.is_admin = is_admin
 		self.created = created
 
 
