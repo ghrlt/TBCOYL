@@ -20,13 +20,15 @@ class User(db.Model):
 	password = db.Column(db.String, nullable=False)
 	is_admin = db.Column(db.Boolean, nullable=False)
 	created = db.Column(db.DateTime)
+	status = db.Column(db.Integer)
 
-	def __init__(self, name, email, password, is_admin, created):
+	def __init__(self, name, email, password, is_admin, created, status):
 		self.name = name
 		self.email = email
 		self.password = password
 		self.is_admin = is_admin
 		self.created = created
+		self.status = status
 
 
 class Link(db.Model):
@@ -66,6 +68,30 @@ class LinkData(db.Model):
 		self.views = views
 		self.created = created
 		self.expire = expire
+
+
+class UserRevenues(db.Model):
+	__tablename__ = "users_revenues"
+	id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, unique=True, nullable=False)
+	id_ = db.relationship("User", backref="users_revenues.id")
+	revenues = db.Column(db.Integer, nullable=False)
+
+	def __init__(self, id, revenues):
+		self.id = id
+		self.revenues = revenues
+
+
+class LinkRevenues(db.Model):
+	__tablename__ = "links_revenues"
+	date = db.Column(db.DateTime, primary_key=True, nullable=False)
+	link = db.Column(db.String, db.ForeignKey('links_data.id'), nullable=False)
+	link_ = db.relationship("LinkData", backref="links_revenues.link")
+	earned = db.Column(db.Integer, nullable=False)
+
+	def __init__(self, date, link, earned):
+		self.date = date
+		self.link = link
+		self.earned = earned
 
 
 class Visitor(db.Model):

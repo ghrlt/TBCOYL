@@ -13,6 +13,43 @@
 <body>
 
 <div class="content">
+	<table class="table custom-table">
+		<thead>
+			<tr>
+				<th scope="col" style="padding-right: 25px;">
+					<label class="control control--checkbox">
+						<div class="control__indicator bg-info"></div>
+					</label>
+				</th>
+				<th scope="col">Name</th>
+				<th scope="col">Email</th>
+				<th scope="col">Created on</th>
+				<th scope="col">n° of links</th>
+				<th scope="col">Total revenues</th>
+			</tr>
+		</thead>
+		{% for user in users %}
+		<tr scope="row" onclick="window.location='/admin/users/{{user.id}}'">
+			<th>
+				<label class="control control--checkbox">
+					{% if user.status == 0 %}
+					<div class="control__indicator bg-success"></div>
+					{% elif user.status == 1 %}
+					<div class="control__indicator bg-warning"></div>
+					{% elif user.status == -1 %}
+					<div class="control__indicator bg-danger"></div>
+					{% endif %}
+				</label>
+			</th>
+			<td>{{user.name}}</td>
+			<td>{{user.email}}</td>
+			<td>{{user.created}}</td>
+			<td>{{user.links|length()}}</td>
+			<td>{{user.revenues_total}}€</td>
+		</tr>
+		<tr class="spacer"><td colspan="100"></td></tr>
+		{% endfor %}
+	</table>
 </div>
 
 	<script src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>

@@ -55,14 +55,21 @@ def admin_links():
 @app.route('/admin/users/')
 @backend.isLoggedInAsAdmin
 def admin_users():
-	u = []
+	u = backend.loadUsersList(full=True)
 	return render_template("admin/users.html", users=u)
+
 
 @app.route('/admin/links/<code>')
 @backend.isLoggedInAsAdmin
 def admin_link(code):
 	l = backend.loadLinkByCode(code)
 	return render_template("admin/link.html", link=l)
+
+@app.route('/admin/users/<id>')
+@backend.isLoggedInAsAdmin
+def admin_user(id):
+	u = backend.loadUserById(id)
+	return render_template("admin/user.html", user=u)
 
 
 

@@ -107,6 +107,10 @@ def loginSys():
 		session['error'] = "Incorrect password entered."
 		return redirect("/login")
 
+	if u.status == -1:
+		session['error'] = "This account has been banned."
+		return redirect("/login")
+
 	try: del session['error']
 	except: pass
 	session['email'] = email
@@ -131,8 +135,10 @@ def registerSys():
 		return redirect("/register")
 
 	t = datetime.datetime.utcnow()
-	u = bdb.User(name, email, password, False, t)
+	u = bdb.User(name, email, password, False, t, 0)
 	bdb.db.session.add(u)
+	m = bdb.Monetization(u.id, 0)
+	bdb.db.session.add(m)
 	bdb.db.session.commit()
 
 	try: del session['error']
@@ -233,10 +239,11 @@ def loadUserLinks():
 
 	return links
 
-
 #app.route('/api/load_link')
 def loadLinkByCode(code):
 	link = bdb.Link.query.filter_by(code=code).first()
+	if not link: return None
+
 	l_data = bdb.LinkData.query.filter_by(id=link.code).first()
 
 	link.views = l_data.views
@@ -503,6 +510,43 @@ def loadLinkByCode(code):
 	del temp1
 	del temp2	
 	return link
+
+
+#@app.route('/api/load_users_list')
+def loadUsersList(full=False):
+	users = bdb.User.query.all()
+	if full:
+		for i,user in enumerate(users):
+			users[i].links = []
+			for link in bdb.Link.query.filter_by(owner=user.id).all():
+				link_data = bdb.LinkData.query.filter_by(id=link.code).first()
+
+				link.ad = link_data.ad
+				link.views = link_data.views
+				link.created = link_data.created
+				link.expire = link_data.expire
+
+				link.revenues_data = bdb.LinkRevenues.query.filter_by(link=link.code).all()
+				link.revenues_total = sum([l.earned for l in link.revenues_data])
+
+
+				users[i].links.append(link)
+			
+			users[i].revenues_total = bdb.UserRevenues.query.filter_by(id=link.owner).first().revenues
+
+	return users
+
+#@app.route('/api/load_user')
+def loadUserById(id):
+	user = bdb.User.query.filter_by(id=id).first()
+	if not user: return None
+
+	u_revenues = bdb.UserRevenues.query.filter_by(id=user.id).first()
+	user.revenues_total = u_revenues.revenues
+
+	user.links = bdb.Link.query.filter_by(owner=user.id).all()
+
+	return user
 
 
 class Country:

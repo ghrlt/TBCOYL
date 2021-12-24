@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="{{url_for('static', filename='images/tbcoyl_favicon.png')}}"/>
+	<title>Admin panel | TBCOYL</title>
+
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/flag-icon-css/css/flag-icon.min.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='vendors/mdi/css/materialdesignicons.min.css')}}">
+</head>
+<body>
+
+	{{user}}
+
+
+	<script src="{{url_for('static', filename='js/jquery-3.3.1.min.js')}}"></script>
+	<script src="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap.min.js')}}"></script>
+	<script src="{{url_for('static', filename='vendors/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
+
+	<script src="{{url_for('static', filename='main.js')}}"></script>
+</body>
+</html>
