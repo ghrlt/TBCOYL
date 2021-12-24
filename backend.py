@@ -213,9 +213,17 @@ def banLinkByCode(code):
 	link.status = -1
 	bdb.db.session.commit()
 
-	return redirect("/dashboard")
+	return redirect("/admin/links")
 
 
+@app.route('/admin/users/<id>/ban', methods=['POST'])
+@isLoggedInAsAdmin
+def banUserByCode(id):
+	user = bdb.User.query.filter_by(id=id).first()
+	user.status = -1
+	bdb.db.session.commit()
+
+	return redirect("/admin/users")
 
 
 #@app.route('/api/load_user_links')
@@ -547,6 +555,7 @@ def loadUserById(id):
 	user.links = bdb.Link.query.filter_by(owner=user.id).all()
 
 	return user
+
 
 
 class Country:
