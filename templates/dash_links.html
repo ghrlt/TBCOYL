@@ -49,9 +49,13 @@
 						<div class="d-flex align-items-center align-self-start">
 							<h3 class="mb-0">{{link.n_visitors['month']}}</h3>
 							{% if link.n_visitors['month'] > link.n_visitors['last_month'] %}
-							<p class="text-success ml-2 mb-0 font-weight-medium">+{{0 if link.n_visitors['month'] == 0 else (100*(link.n_visitors['last_month']-link.n_visitors['month'])/link.n_visitors['last_month'])|abs()|round(2, 'floor')}}%</p>
+							<p class="text-success ml-2 mb-0 font-weight-medium">+{{0 if link.n_visitors['last_month'] == 0 else (100*(link.n_visitors['last_month']-link.n_visitors['month'])/link.n_visitors['last_month'])|abs()|round(2, 'floor')}}%</p>
 							{% else %}
-							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{100 if link.n_visitors['last_month'] == 0 else (100*(link.n_visitors['month']-link.n_visitors['last_month'])/link.n_visitors['month'])|abs()|round(2, 'floor')}}%</p>
+								{% if link.n_visitors['month'] == 0 %}
+								<p class="text-danger ml-2 mb-0 font-weight-medium"></p>
+								{% else %}
+								<p class="text-danger ml-2 mb-0 font-weight-medium">-{{100 if link.n_visitors['month'] == 0 else (100*(link.n_visitors['month']-link.n_visitors['last_month'])/link.n_visitors['month'])|abs()|round(2, 'floor')}}%</p>
+								{% endif %}
 							{% endif %}
 						</div>
 					</div>
@@ -80,9 +84,13 @@
 						<div class="d-flex align-items-center align-self-start">
 							<h3 class="mb-0">{{link.n_visitors['day']}}</h3>
 							{% if link.n_visitors['day'] > link.n_visitors['last_day'] %}
-							<p class="text-success ml-2 mb-0 font-weight-medium">+{{100 if link.n_visitors['day'] == 0 else (100*(link.n_visitors['last_day']-link.n_visitors['day'])/link.n_visitors['last_day'])|abs()|round(2, 'floor')}}%</p>
+							<p class="text-success ml-2 mb-0 font-weight-medium">+{{100 if link.n_visitors['last_day'] == 0 else (100*(link.n_visitors['last_day']-link.n_visitors['day'])/link.n_visitors['last_day'])|abs()|round(2, 'floor')}}%</p>
 							{% else %}
-							<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100 if link.n_visitors['last_day'] == 0 else 100*(link.n_visitors['day']-link.n_visitors['last_day'])/link.n_visitors['day'])|abs()|round(2, 'floor')}}%</p>
+								{% if link.n_visitors['day'] == 0 %}
+								<p class="text-danger ml-2 mb-0 font-weight-medium"></p>
+								{% else %}
+								<p class="text-danger ml-2 mb-0 font-weight-medium">-{{(100 if link.n_visitors['day'] == 0 else 100*(link.n_visitors['day']-link.n_visitors['last_day'])/link.n_visitors['day'])|abs()|round(2, 'floor')}}%</p>
+								{% endif %}
 							{% endif %}
 						</div>
 					</div>
