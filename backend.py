@@ -183,6 +183,7 @@ def createLinkSys():
 
 
 @app.route('/dashboard/links/<code>/disable', methods=['POST'])
+@isLoggedIn
 def disableLinkByCode(code):
 	link = bdb.Link.query.filter_by(code=code).first()
 	link.status = 1
@@ -191,6 +192,7 @@ def disableLinkByCode(code):
 	return redirect(f"/dashboard/links/{code}")
 
 @app.route('/dashboard/links/<code>/enable', methods=['POST'])
+@isLoggedIn
 def enableLinkByCode(code):
 	link = bdb.Link.query.filter_by(code=code).first()
 	link.status = 0
@@ -199,6 +201,7 @@ def enableLinkByCode(code):
 	return redirect(f"/dashboard/links/{code}")
 
 @app.route('/dashboard/links/<code>/delete', methods=['POST'])
+@isLoggedIn
 def deleteLinkByCode(code):
 	link = bdb.Link.query.filter_by(code=code).first()
 	link.status = -1
