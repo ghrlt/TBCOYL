@@ -4,6 +4,11 @@ import random
 app = Flask("TBCOYL")
 app.secret_key = ''.join([chr(random.randint(65,122)) for _ in range(64)])
 
+def length(element):
+	return len(element)
+app.add_template_filter(length)
+
+
 import frontend
 
 
