@@ -223,7 +223,11 @@ def banLinkByCode(code):
 @isLoggedInAsAdmin
 def banUserByCode(id):
 	user = bdb.User.query.filter_by(id=id).first()
-	user.status = -1
+	if user.status == -1:
+		user.status = 0
+	else:
+		user.status = -1
+
 	bdb.db.session.commit()
 
 	return redirect("/admin/users")
@@ -556,6 +560,10 @@ def loadUserById(id):
 	user.revenues_total = u_revenues.revenues
 
 	user.links = bdb.Link.query.filter_by(owner=user.id).all()
+	for link in user.links:
+		link.data = bdb.LinkData.query.filter_by(id=link.code).first()
+
+		link.fullurl = f"{link.domain}/{link.code}"
 
 	return user
 
